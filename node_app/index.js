@@ -1,8 +1,12 @@
 var express = require('express');
 var BBPromise = require('bluebird');
+var bodyParser = require('body-parser');
 var mysql = require('mysql');
 var _ = require('lodash');
+require('dotenv').config();
+
 var app = express();
+app.use(bodyParser.json());
 
 
 // promisify here instead of dynamically, a lot faster
@@ -26,7 +30,8 @@ function getSqlConnection() {
   });
 }
 
-app.get('/', (req, res, next) => {
+app.post('/', (req, res, next) => {
+  console.log(req.body);
   BBPromise.using(getSqlConnection(), conn => {
 
   })
