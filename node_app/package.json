@@ -15,5 +15,11 @@
   "bugs": {
     "url": "https://github.com/joeymbryan/my-health-dashboard/issues"
   },
-  "homepage": "https://github.com/joeymbryan/my-health-dashboard#readme"
+  "homepage": "https://github.com/joeymbryan/my-health-dashboard#readme",
+  "dependencies": {
+    "bluebird": "^3.3.5",
+    "express": "^4.13.4",
+    "lodash": "^4.11.2",
+    "mysql": "^2.10.2"
+  }
 }
