@@ -1,0 +1,28 @@
+{
+  "DVTSourceControlWorkspaceBlueprintPrimaryRemoteRepositoryKey" : "61D44653D12BFB2DF59C481402A9B16C47D4989C",
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyRepositoryLocationsKey" : {
+
+  },
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyStatesKey" : {
+    "61D44653D12BFB2DF59C481402A9B16C47D4989C" : 0
+  },
+  "DVTSourceControlWorkspaceBlueprintIdentifierKey" : "6876F656-A040-4D9F-B406-E445E904D73C",
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyPathsKey" : {
+    "61D44653D12BFB2DF59C481402A9B16C47D4989C" : ""
+  },
+  "DVTSourceControlWorkspaceBlueprintNameKey" : "HKTutorial",
+  "DVTSourceControlWorkspaceBlueprintVersion" : 204,
+  "DVTSourceControlWorkspaceBlueprintRelativePathToProjectKey" : "HKTutorialBase\/HKTutorial.xcodeproj",
+  "DVTSourceControlWorkspaceBlueprintRemoteRepositoriesKey" : [
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "github.com:joeymbryan\/my-health-dashboard.git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "61D44653D12BFB2DF59C481402A9B16C47D4989C"
+    },
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "github.com:joeymbryan\/my-health-dashboard.git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "61D44653D12BFB2DF59C481402A9B16C47D4989C"
+    }
+  ]
+}
