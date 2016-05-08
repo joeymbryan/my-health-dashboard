@@ -20,5 +20,5 @@ $ npm install
 
 Now you start up the app:
 ```sh
-node index.js
-``
+$ node index.js
+```
