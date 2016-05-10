@@ -30,7 +30,7 @@ function getSqlConnection() {
   });
 }
 
-app.post('/', (req, res, next) => {
+app.post('/:userId', (req, res, next) => {
   console.log(req.body);
   BBPromise.using(getSqlConnection(), conn => {
 
