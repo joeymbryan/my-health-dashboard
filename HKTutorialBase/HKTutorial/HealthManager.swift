@@ -39,5 +39,14 @@ class HealthManager {
       }
     }
   }
+  class var sharedInstance: HealthManager {
+    struct Singleton {
+      static let instance = HealthManager()
+    }
+    
+    return Singleton.instance
+  }
+  let stepsCount = HKQuantityType.quantityTypeForIdentifier(HKQuantityTypeIdentifierStepCount)
   
+  let stepsUnit = HKUnit.countUnit()
 }

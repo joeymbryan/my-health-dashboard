@@ -1,144 +1,104 @@
 //
-//  ProfileViewController.swift
-//  HKTutorial
+//  StepsViewController.swift
+//  HealthKitStepsDemo
 //
-//  Created by ernesto on 18/10/14.
-//  Copyright (c) 2014 raywenderlich. All rights reserved.
+//  Created by Natasha Murashev on 10/20/14.
+//  Copyright (c) 2014 NatashaTheRobot. All rights reserved.
 //
 
 import UIKit
 import HealthKit
 
-class ProfileViewController: UITableViewController {
+class StepsViewController: UIViewController, UITableViewDataSource {
   
-  let UpdateProfileInfoSection = 2
-  let SaveBMISection = 3
-  let kUnknownString   = "Unknown"
+  @IBOutlet weak private var tableView: UITableView!
   
-  @IBOutlet var ageLabel:UILabel!
-  @IBOutlet var bloodTypeLabel:UILabel!
-  @IBOutlet var biologicalSexLabel:UILabel!
-  @IBOutlet var weightLabel:UILabel!
-  @IBOutlet var heightLabel:UILabel!
-  @IBOutlet var bmiLabel:UILabel!
+  @IBOutlet weak private var activityIndicator: UIActivityIndicatorView!
   
-  var healthManager:HealthManager?
-  var bmi:Double?
+  private let stepCellIdentifier = "stepCell"
+  private let totalStepsCellIdentifier = "totalStepsCell"
   
+  private let healthKitManager = HealthManager.sharedInstance
   
+  private var steps = [HKQuantitySample]()
   
-  func updateHealthInfo() {
+  private let dateFormatter: NSDateFormatter = {
+    let formatter = NSDateFormatter()
+    formatter.dateStyle = .ShortStyle
+    return formatter
+  }()
+  
+  override func viewDidLoad() {
+    super.viewDidLoad()
     
-    updateProfileInfo();
-    updateWeight();
-    updateHeight();
-    
+    activityIndicator.startAnimating()
+    requestHealthKitAuthorization()
   }
   
-  func updateProfileInfo()
-  {
-    print("TODO: update profile Information")
+  // MARK: TableView Data Source
+  
+  func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    return steps.count
   }
   
-  
-  func updateHeight()
-  {
-    print("TODO: update Height")
+  func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
+    let cell = tableView.dequeueReusableCellWithIdentifier(stepCellIdentifier)! as UITableViewCell
     
-  }
-  
-  func updateWeight()
-  {
-    print("TODO: update Weight")
-  }
-  
-  func updateBMI()
-  {
-    print("TODO: update BMI")
+    let step = steps[indexPath.row]
+    let numberOfSteps = Int(step.quantity.doubleValueForUnit(healthKitManager.stepsUnit))
     
-  }
-  
-  func saveBMI() {
+    cell.textLabel.text = "\(numberOfSteps) steps"
+    cell.detailTextLabel?.text = dateFormatter.stringFromDate(step.startDate)
     
-    print("TODO: save BMI sample")
-    
+    return cell
   }
-  // MARK: - utility methods
-  func calculateBMIWithWeightInKilograms(weightInKilograms:Double, heightInMeters:Double) -> Double?
-  {
-    if heightInMeters == 0 {
-      return nil;
-    }
-    return (weightInKilograms/(heightInMeters*heightInMeters));
-  }
+}
+
+private extension StepsViewController {
   
-  
-  func biologicalSexLiteral(biologicalSex:HKBiologicalSex?)->String
-  {
-    var biologicalSexText = kUnknownString;
-    
-    if  biologicalSex != nil {
-      
-      switch( biologicalSex! )
-      {
-      case .Female:
-        biologicalSexText = "Female"
-      case .Male:
-        biologicalSexText = "Male"
-      default:
-        break;
+  func requestHealthKitAuthorization() {
+    let dataTypesToRead = NSSet(objects: healthKitManager.stepsCount!)
+    healthKitManager.healthKitStore?.requestAuthorizationToShareTypes(nil, readTypes: dataTypesToRead, completion: { [unowned self] (success, error) in
+      if success {
+        self.queryStepsSum()
+        self.querySteps()
+      } else {
+        println(error.description)
       }
-      
-    }
-    return biologicalSexText;
+      })
   }
   
-  func bloodTypeLiteral(bloodType:HKBloodType?)->String
-  {
-    
-    var bloodTypeText = kUnknownString;
-    
-    if bloodType != nil {
-      
-      switch( bloodType! ) {
-      case .APositive:
-        bloodTypeText = "A+"
-      case .ANegative:
-        bloodTypeText = "A-"
-      case .BPositive:
-        bloodTypeText = "B+"
-      case .BNegative:
-        bloodTypeText = "B-"
-      case .ABPositive:
-        bloodTypeText = "AB+"
-      case .ABNegative:
-        bloodTypeText = "AB-"
-      case .OPositive:
-        bloodTypeText = "O+"
-      case .ONegative:
-        bloodTypeText = "O-"
-      default:
-        break;
+  func queryStepsSum() {
+    let sumOption = HKStatisticsOptions.CumulativeSum
+    let statisticsSumQuery = HKStatisticsQuery(quantityType: healthKitManager.stepsCount!, quantitySamplePredicate: nil, options: sumOption) { [unowned self] (query, result, error)! in
+      if let sumQuantity = result?.sumQuantity() {
+        let headerView = self.tableView.dequeueReusableCellWithIdentifier(self.totalStepsCellIdentifier)! as UITableViewCell
+        
+        let numberOfSteps = Int(sumQuantity.doubleValueForUnit(self.healthKitManager.stepsUnit))
+        headerView.textLabel.text = "\(numberOfSteps) total"
+        self.tableView.tableHeaderView = headerView
       }
+      self.activityIndicator.stopAnimating()
       
     }
-    return bloodTypeText;
+    healthKitManager.healthStore?.executeQuery(statisticsSumQuery)
   }
   
-  override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
-    tableView.deselectRowAtIndexPath(indexPath , animated: true)
-    
-    switch (indexPath.section, indexPath.row)
-    {
-    case (UpdateProfileInfoSection,0):
-      updateHealthInfo()
-    case (SaveBMISection,0):
-      saveBMI()
-    default:
-      break;
+  func querySteps() {
+    let sampleQuery = HKSampleQuery(sampleType: healthKitManager.stepsCount!,
+                                    predicate: nil,
+                                    limit: 100,
+                                    sortDescriptors: nil)
+    { [unowned self] (query, results, error) in
+      if let results = results as? [HKQuantitySample] {
+        self.steps = results
+        self.tableView.reloadData()
+      }
+      self.activityIndicator.stopAnimating()
     }
     
-    
+    healthKitManager.healthKitStore.executeQuery(sampleQuery)
   }
+  
   
 }
